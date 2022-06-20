@@ -10,6 +10,7 @@ import axios from 'axios';
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import moment from 'moment-timezone';
+import getConfig from "next/config";
 
 type NextPageWithLayout = NextPage & {
   getLayout?: (page: ReactElement) => ReactNode
@@ -19,7 +20,8 @@ type AppPropsWithLayout = AppProps & {
   Component: NextPageWithLayout
 }
 
-axios.defaults.baseURL = "http://localhost";
+const { publicRuntimeConfig } = getConfig();
+axios.defaults.baseURL = publicRuntimeConfig.API_PATH;
 axios.defaults.withCredentials = true;
 axios.defaults.xsrfHeaderName = "X-XSRF-TOKEN";
 moment.tz.setDefault("UTC");
