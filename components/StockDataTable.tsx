@@ -52,7 +52,9 @@ export default function ServerPaginationGrid() {
   }, []);
 
   function onPageChange(newPage: number) {
-    callStockData(newPage);
+    const dateString = moment(dateValue).format('yyyy-MM-DD');
+    
+    callStockData(newPage, dateString, symbolIdValue);
   }
 
   function callStockData(newPage: number = 0, newDateTime: string = moment(dateValue).format('yyyy-MM-DD'), symbolId = 1) {
