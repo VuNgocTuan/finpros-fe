@@ -9,9 +9,8 @@ const Home = () => {
 };
 
 Home.getLayout = function getLayout(page: ReactElement) {
-  const { props } = page;
   return (
-    <MainLayout childContainer={page}></MainLayout>
+    <MainLayout childContainer={page} title='Dashboard'></MainLayout>
   )
 }
 

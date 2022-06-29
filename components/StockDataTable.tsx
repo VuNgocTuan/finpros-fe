@@ -26,12 +26,7 @@ const columns: GridColDef[] = [
   { field: 'next_time', headerName: 'Next time', flex: 1 },
 ];
 
-const top100Films = [
-  { label: 'The Shawshank Redemption', year: 1994 },
-]
-
 export default function ServerPaginationGrid() {
-  // const [page, setPage] = React.useState(0);
   const [pageSize, setPageSize] = React.useState(20);
   const [isLoading, setIsLoading] = React.useState(true);
   const [data, setData] = React.useState([]);

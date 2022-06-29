@@ -11,11 +11,10 @@ import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
 import Badge from '@mui/material/Badge';
 import Container from '@mui/material/Container';
-import Link from '@mui/material/Link';
 import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import NotificationsIcon from '@mui/icons-material/Notifications';
-import { mainListItems } from './ListMenuItems';
+import MainMenuListItem from './ListMenuItems';
 import APIUtils from '../src/Services/APIUtils';
 import { Backdrop, CircularProgress } from '@mui/material';
 
@@ -71,7 +70,7 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 
 const mdTheme = createTheme();
 
-const MainLayout = ({ childContainer }: any) => {
+const MainLayout = ({ childContainer, title }: any) => {
     const [user, setUser] = useState(null);
     const [open, setOpen] = useState(true);
 
@@ -126,7 +125,7 @@ const MainLayout = ({ childContainer }: any) => {
                                 noWrap
                                 sx={{ flexGrow: 1 }}
                             >
-                                Dashboard
+                                {title}
                             </Typography>
                             <IconButton color="inherit">
                                 <Badge badgeContent={0} color="secondary">
@@ -150,7 +149,7 @@ const MainLayout = ({ childContainer }: any) => {
                         </Toolbar>
                         <Divider />
                         <List component="nav">
-                            {mainListItems}
+                            <MainMenuListItem></MainMenuListItem>
                         </List>
                     </Drawer>
                     <Box
