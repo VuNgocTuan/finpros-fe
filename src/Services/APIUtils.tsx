@@ -24,7 +24,11 @@ export default class APIUtils {
                     });
                     break;
                 case 'POST': {
-                    response = await axios.post(urlPath, data);
+                    response = await axios.post(urlPath, JSON.stringify(data), {
+                        headers: {
+                            'Content-Type': 'application/json',
+                        }
+                    });
                     break;
                 }
             }
@@ -33,12 +37,10 @@ export default class APIUtils {
                 if (err.response.status === 401 || err.response.status === 419) {
                     return redirectPage('/auth/login');
                 }
+
+                throw err;
             }
         }
-
-        // if (!response) {
-        //     return redirectPage('/auth/login');
-        // }
 
         return response;
     }
