@@ -13,22 +13,23 @@ export default class APIUtils {
 
     static async fetch(method: string, urlPath: string, data?: any) {
         let response = null;
+        const config = {
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        };
 
         try {
             switch (method) {
                 case 'GET':
-                    response = await axios.get(urlPath, {
-                        headers: {
-                            'Content-Type': 'application/json',
-                        }
-                    });
+                    response = await axios.get(urlPath, config);
                     break;
                 case 'POST': {
-                    response = await axios.post(urlPath, JSON.stringify(data), {
-                        headers: {
-                            'Content-Type': 'application/json',
-                        }
-                    });
+                    response = await axios.post(urlPath, JSON.stringify(data), config);
+                    break;
+                }
+                case 'DELETE': {
+                    response = await axios.delete(urlPath, config);
                     break;
                 }
             }
