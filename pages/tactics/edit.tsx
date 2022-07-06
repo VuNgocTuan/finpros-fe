@@ -6,7 +6,7 @@ import AddIcon from '@mui/icons-material/Add';
 import APIUtils from "../../src/Services/APIUtils";
 import moment from 'moment-timezone';
 import LoadingButton from '@mui/lab/LoadingButton';
-import Router from "next/router";
+import Router, { useRouter } from "next/router";
 
 const currencies = [
     {
@@ -19,19 +19,23 @@ const currencies = [
     }
 ];
 
-const TacticAdd = () => {
+const TacticEdit = () => {
+    const router = useRouter();
+
     const [tacticName, setTacticName] = React.useState('');
     const [author, setAuthor] = React.useState('Quan');
     const [dateValue, setDateValue] = React.useState<Date | null>(
         new Date(),
     );
+    const [endDateValue, setEndDateValue] = React.useState<Date | null>(null);
     const [tickerFields, setTickerFields] = React.useState([
-        { ticker: 0, volume: 0 }
+        { id: 0, volume: 0, tactic_id: 0, stock_id: 0, start_date: '', end_date: '' }
     ]);
     const [symbols, setSymbols] = React.useState<[{ id: number, label: string }]>([{ id: 1, label: 'AAV' }]);
     const [nameErr, setNameError] = React.useState(null);
     const [authorErr, setAuthorErr] = React.useState(null);
     const [startDateErr, setStartDateErr] = React.useState(null);
+    const [endDateErr, setEndDateErr] = React.useState(null);
     const [tickersErr, setTickersErr] = React.useState(null);
     const [loading, setLoading] = React.useState(false);
 
@@ -43,8 +47,12 @@ const TacticAdd = () => {
         setDateValue(newValue);
     };
 
+    const handleEndDateChange = (newValue: Date | null) => {
+        setEndDateValue(newValue);
+    };
+
     function addNewticker() {
-        let newTicker = { ticker: 0, volume: 0 };
+        let newTicker = { id: 0, volume: 0, tactic_id: Number(router.query.id), stock_id: 0, start_date: '', end_date: '' };
         setTickerFields([...tickerFields, newTicker]);
     }
 
@@ -58,7 +66,19 @@ const TacticAdd = () => {
         if (!newValue) { return }
 
         let data = [...tickerFields];
-        data[index]['ticker'] = Number(newValue.id);
+        data[index]['stock_id'] = Number(newValue.id);
+        setTickerFields(data);
+    }
+
+    function handleTickerStartDateChange(index: number, newValue: Date | null) {
+        let data = [...tickerFields];
+        data[index]['start_date'] = newValue ? moment(newValue).format('yyyy-MM-DD') : '';
+        setTickerFields(data);
+    }
+
+    function handleTickerEndDateChange(index: number, newValue: Date | null) {
+        let data = [...tickerFields];
+        data[index]['end_date'] = newValue ? moment(newValue).format('yyyy-MM-DD') : '';
         setTickerFields(data);
     }
 
@@ -72,17 +92,19 @@ const TacticAdd = () => {
         const data = {
             'name': tacticName,
             'author': author,
-            'start_date': moment(dateValue).format('yyyy-MM-DD'),
+            'start_date': dateValue ? moment(dateValue).format('yyyy-MM-DD') : null,
+            'end_date': endDateValue ? moment(endDateValue).format('yyyy-MM-DD') : null,
             'tickers': tickerFields
         };
 
-        APIUtils.fetch('POST', '/api/tactics', data).then(response => {
+        APIUtils.fetch('PUT', `/api/tactics/${router.query.id}`, data).then(response => {
             setNameError(null);
             setAuthorErr(null);
             setStartDateErr(null);
+            setEndDateErr(null);
             setTickersErr(null);
+            
             return Router.push('/tactics/list');
-
         }).catch(err => {
             setLoading(false);
 
@@ -91,6 +113,7 @@ const TacticAdd = () => {
                 setNameError(err?.response?.data?.errors?.name);
                 setAuthorErr(err?.response?.data?.errors?.author);
                 setStartDateErr(err?.response?.data?.errors?.start_date);
+                setEndDateErr(err?.response?.data?.errors?.end_date);
             }
         });
     }
@@ -98,6 +121,16 @@ const TacticAdd = () => {
     React.useEffect(() => {
         APIUtils.fetch('GET', '/api/symbols').then(response => {
             setSymbols(response?.data.data);
+        });
+
+        APIUtils.fetch('GET', `/api/tactics/${router.query.id}`).then(response => {
+            const tactic = response?.data;
+
+            setTacticName(tactic.name);
+            setAuthor(tactic.author);
+            setDateValue(tactic.start_date);
+            setEndDateValue(tactic.end_date);
+            setTickerFields(tactic.tactic_stocks);
         });
 
     }, []);
@@ -148,6 +181,17 @@ const TacticAdd = () => {
                         helperText={startDateErr == null ? '' : startDateErr}
                     />}
                 />
+                <DesktopDatePicker
+                    label="End Date"
+                    inputFormat="DD/MM/yyyy"
+                    value={endDateValue}
+                    onChange={handleEndDateChange}
+                    renderInput={(params) => <TextField
+                        {...params}
+                        error={endDateErr != null}
+                        helperText={endDateErr == null ? '' : endDateErr}
+                    />}
+                />
             </Box>
             <Box
                 component="div"
@@ -168,9 +212,10 @@ const TacticAdd = () => {
                                 <Autocomplete
                                     disablePortal
                                     id="combo-box-demo"
-                                    defaultValue={!symbols.length ? symbols[0] : null}
+                                    defaultValue={!symbols.length ? symbols[input.stock_id] : null}
+                                    value={symbols[input.stock_id] ?? null}
                                     options={symbols}
-                                    sx={{ width: '150px' }}
+                                    sx={{ width: '15ch' }}
                                     onChange={(e, newValue) => handleTickerIdChange(index, newValue)}
                                     renderInput={
                                         (params) => <TextField
@@ -186,15 +231,39 @@ const TacticAdd = () => {
                                     label="Volume"
                                     variant="outlined"
                                     name="123"
-                                    sx={{ ml: 2 }}
+                                    sx={{ ml: 2, width: '20ch' }}
                                     inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
                                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleTickerVolumeChange(index, e)}
                                     value={input.volume}
                                     error={tickersErr != null && tickersErr[`tickers.${index}.volume`] !== undefined}
                                     helperText={(tickersErr != null && tickersErr[`tickers.${index}.volume`] !== undefined) ? tickersErr[`tickers.${index}.volume`] : ''}
                                 />
+                                <DesktopDatePicker
+                                    label="Start Date"
+                                    inputFormat="DD/MM/yyyy"
+                                    value={input.start_date}
+                                    onChange={(newValue: Date | null) => handleTickerStartDateChange(index, newValue)}
+                                    renderInput={(params) => <TextField
+                                        {...params}
+                                        sx={{ ml: 2, width: '20ch' }}
+                                        error={tickersErr != null && tickersErr[`tickers.${index}.start_date`] !== undefined}
+                                        helperText={(tickersErr != null && tickersErr[`tickers.${index}.start_date`] !== undefined) ? tickersErr[`tickers.${index}.start_date`] : ''}
+                                    />}
+                                />
+                                <DesktopDatePicker
+                                    label="End Date"
+                                    inputFormat="DD/MM/yyyy"
+                                    value={input.end_date}
+                                    onChange={(newValue: Date | null) => handleTickerEndDateChange(index, newValue)}
+                                    renderInput={(params) => <TextField
+                                        {...params}
+                                        sx={{ ml: 2, width: '20ch' }}
+                                        error={tickersErr != null && tickersErr[`tickers.${index}.end_date`] !== undefined}
+                                        helperText={(tickersErr != null && tickersErr[`tickers.${index}.end_date`] !== undefined) ? tickersErr[`tickers.${index}.end_date`] : ''}
+                                    />}
+                                />
                                 <IconButton
-                                    aria-label="delete"
+                                    aria-label="add"
                                     size="large"
                                     style={{ width: "50px", height: 'fit-content', display: index == tickerFields.length - 1 ? '' : 'none' }}
                                     onClick={addNewticker}>
@@ -208,17 +277,17 @@ const TacticAdd = () => {
                     loading={loading}
                     onClick={handleSubmit}
                     variant="contained">
-                    Submit
+                    Update
                 </LoadingButton>
             </Box >
         </div >
     );
 };
 
-TacticAdd.getLayout = function getLayout(page: ReactElement) {
+TacticEdit.getLayout = function getLayout(page: ReactElement) {
     return (
-        <MainLayout childContainer={page} title="New Tactic"></MainLayout>
+        <MainLayout childContainer={page} title="Edit Tactic"></MainLayout>
     )
 }
 
-export default TacticAdd;
+export default TacticEdit;

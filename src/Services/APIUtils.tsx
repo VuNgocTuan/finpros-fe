@@ -28,6 +28,10 @@ export default class APIUtils {
                     response = await axios.post(urlPath, JSON.stringify(data), config);
                     break;
                 }
+                case 'PUT': {
+                    response = await axios.put(urlPath, JSON.stringify(data), config);
+                    break;
+                }
                 case 'DELETE': {
                     response = await axios.delete(urlPath, config);
                     break;

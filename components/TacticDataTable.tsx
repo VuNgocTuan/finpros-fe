@@ -7,6 +7,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import BarChartIcon from '@mui/icons-material/BarChart';
 import ConfirmDialog from "./dialog/ConfirmDialog";
+import Router from "next/router";
 
 export default function TacticDataTable() {
     const [pageSize, setPageSize] = React.useState(20);
@@ -42,8 +43,6 @@ export default function TacticDataTable() {
             sortable: false,
             renderCell: (params) => {
                 function handleDelete() {
-                    console.log(params);
-
                     setDialog({
                         isOpen: true,
                         isLoading: false,
@@ -83,12 +82,20 @@ export default function TacticDataTable() {
                         }
                     });
                 }
+
+                function handleEdit() {
+                    Router.push({
+                        pathname: '/tactics/edit',
+                        query: { id: params.row.id }
+                    })
+                }
+
                 return (
                     <Stack direction="row" spacing={1}>
                         <IconButton aria-label="chart" color="primary">
                             <BarChartIcon />
                         </IconButton>
-                        <IconButton aria-label="edit" color="primary">
+                        <IconButton aria-label="edit" color="primary" onClick={handleEdit}>
                             <EditIcon />
                         </IconButton>
                         <IconButton aria-label="delete" onClick={handleDelete}>
