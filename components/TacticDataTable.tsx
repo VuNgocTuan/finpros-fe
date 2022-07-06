@@ -90,9 +90,16 @@ export default function TacticDataTable() {
                     })
                 }
 
+                function handleChart() {
+                    Router.push({
+                        pathname: '/tactics/profit',
+                        query: { id: params.row.id }
+                    })
+                }
+
                 return (
                     <Stack direction="row" spacing={1}>
-                        <IconButton aria-label="chart" color="primary">
+                        <IconButton aria-label="chart" color="primary" onClick={handleChart}>
                             <BarChartIcon />
                         </IconButton>
                         <IconButton aria-label="edit" color="primary" onClick={handleEdit}>
