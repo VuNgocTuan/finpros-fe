@@ -79,6 +79,8 @@ const TacticEdit = () => {
     function handleTickerEndDateChange(index: number, newValue: Date | null) {
         let data = [...tickerFields];
         data[index]['end_date'] = newValue ? moment(newValue).format('yyyy-MM-DD') : '';
+        console.log(data[index]);
+        
         setTickerFields(data);
     }
 

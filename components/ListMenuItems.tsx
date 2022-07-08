@@ -10,6 +10,7 @@ import MapIcon from '@mui/icons-material/Map';
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import ViewListIcon from '@mui/icons-material/ViewList';
 import AddIcon from '@mui/icons-material/Add';
+import UploadFileIcon from '@mui/icons-material/UploadFile';
 
 const MainMenuListItem = () => {
   const router = useRouter();
@@ -45,6 +46,14 @@ const MainMenuListItem = () => {
               <AddIcon />
             </ListItemIcon>
             <ListItemText primary="Add" />
+          </ListItemButton>
+        </List>
+        <List component="div" disablePadding>
+          <ListItemButton sx={{ pl: 4 }} selected={router.pathname == '/tactics/upload'} onClick={() => { router.push('/tactics/upload') }}>
+            <ListItemIcon>
+              <UploadFileIcon />
+            </ListItemIcon>
+            <ListItemText primary="Upload" />
           </ListItemButton>
         </List>
       </Collapse>

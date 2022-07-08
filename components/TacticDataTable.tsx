@@ -92,8 +92,7 @@ export default function TacticDataTable() {
 
                 function handleChart() {
                     Router.push({
-                        pathname: '/tactics/profit',
-                        query: { id: params.row.id }
+                        pathname: `/tactics/profit/${params.row.id }`,
                     })
                 }
 

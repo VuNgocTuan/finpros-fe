@@ -1,5 +1,5 @@
-import React, { ReactElement } from "react";
-import MainLayout from "../../components/MainLayout";
+import React, { ReactElement, useEffect } from "react";
+import MainLayout from "../../../../components/MainLayout";
 
 import {
     Chart as ChartJS,
@@ -13,6 +13,7 @@ import {
 } from 'chart.js';
 import { Line } from 'react-chartjs-2';
 import faker from 'faker';
+import { useRouter } from "next/router";
 
 ChartJS.register(
     CategoryScale,
@@ -47,29 +48,17 @@ export const data = {
             data: labels.map(() => faker.datatype.number({ min: -1000, max: 1000 })),
             borderColor: 'rgb(255, 99, 132)',
             backgroundColor: 'rgba(255, 99, 132, 0.5)',
-        },
-        {
-            label: 'API',
-            data: labels.map(() => faker.datatype.number({ min: -1000, max: 1000 })),
-            borderColor: '#5eb8ff',
-            backgroundColor: '#0288d1',
-        },
-        {
-            label: 'ACB',
-            data: labels.map(() => faker.datatype.number({ min: -1000, max: 1000 })),
-            borderColor: '#fdd835',
-            backgroundColor: '#ffee58',
-        },
-        {
-            label: 'OOC',
-            data: labels.map(() => faker.datatype.number({ min: -1000, max: 1000 })),
-            borderColor: '#76d275',
-            backgroundColor: '#43a047',
-        },
+        }
     ],
 };
 
 const TacticProfit = () => {
+    const router = useRouter();
+    const tacticId = router.query.id;
+
+    React.useEffect(() => {
+        console.log(tacticId);
+    }, []);
 
     return (
         <Line options={options} data={data} />
