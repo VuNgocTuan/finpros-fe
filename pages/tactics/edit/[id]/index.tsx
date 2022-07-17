@@ -1,12 +1,12 @@
-import { Autocomplete, Box, Button, IconButton, MenuItem, Stack, TextField, Typography } from "@mui/material";
+import { Autocomplete, Box, IconButton, MenuItem, Stack, TextField, Typography } from "@mui/material";
 import { DesktopDatePicker } from "@mui/x-date-pickers";
 import React, { ReactElement } from "react";
-import MainLayout from "../../components/MainLayout";
 import AddIcon from '@mui/icons-material/Add';
-import APIUtils from "../../src/Services/APIUtils";
 import moment from 'moment-timezone';
 import LoadingButton from '@mui/lab/LoadingButton';
 import Router, { useRouter } from "next/router";
+import MainLayout from "../../../../components/MainLayout";
+import APIUtils from "../../../../src/Services/APIUtils";
 
 const currencies = [
     {
@@ -214,8 +214,8 @@ const TacticEdit = () => {
                                 <Autocomplete
                                     disablePortal
                                     id="combo-box-demo"
-                                    defaultValue={!symbols.length ? symbols[input.stock_id] : null}
-                                    value={symbols[input.stock_id] ?? null}
+                                    defaultValue={!symbols.length ? symbols[input.stock_id - 1] : null}
+                                    value={symbols[input.stock_id - 1] ?? null}
                                     options={symbols}
                                     sx={{ width: '15ch' }}
                                     onChange={(e, newValue) => handleTickerIdChange(index, newValue)}

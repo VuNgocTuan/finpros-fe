@@ -33,7 +33,7 @@ export const options = {
         },
         title: {
             display: true,
-            text: 'Profit',
+            text: 'Tactic 01',
         },
     },
 };
@@ -44,8 +44,8 @@ export const data = {
     labels,
     datasets: [
         {
-            label: 'OCB',
-            data: labels.map(() => faker.datatype.number({ min: -1000, max: 1000 })),
+            label: 'Total Profit',
+            data: [0, 1000, -5000],
             borderColor: 'rgb(255, 99, 132)',
             backgroundColor: 'rgba(255, 99, 132, 0.5)',
         }

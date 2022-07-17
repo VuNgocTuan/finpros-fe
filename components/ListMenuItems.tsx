@@ -48,14 +48,6 @@ const MainMenuListItem = () => {
             <ListItemText primary="Add" />
           </ListItemButton>
         </List>
-        <List component="div" disablePadding>
-          <ListItemButton sx={{ pl: 4 }} selected={router.pathname == '/tactics/upload'} onClick={() => { router.push('/tactics/upload') }}>
-            <ListItemIcon>
-              <UploadFileIcon />
-            </ListItemIcon>
-            <ListItemText primary="Upload" />
-          </ListItemButton>
-        </List>
       </Collapse>
       <ListItemButton>
         <ListItemIcon>

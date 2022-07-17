@@ -8,6 +8,8 @@ import EditIcon from '@mui/icons-material/Edit';
 import BarChartIcon from '@mui/icons-material/BarChart';
 import ConfirmDialog from "./dialog/ConfirmDialog";
 import Router from "next/router";
+import FileUploadIcon from '@mui/icons-material/FileUpload';
+import UploadDialog from "./dialog/UploadDialog";
 
 export default function TacticDataTable() {
     const [pageSize, setPageSize] = React.useState(20);
@@ -16,6 +18,10 @@ export default function TacticDataTable() {
     const [pageInfo, setPageInfo] = React.useState<{ current_page: number, last_page: number, per_page: number, total: number }>({ current_page: 1, last_page: 1, per_page: 20, total: 1 });
     const [rowCountState, setRowCountState] = React.useState(0);
     const [dialog, setDialog] = React.useState<{ isOpen: boolean, isLoading: boolean, title: string, message: string, handleClose: any, handleSubmit: any }>({ isOpen: false, isLoading: false, title: '', message: '', handleClose: () => { }, handleSubmit: () => { } });
+    const [uploadDialog, setUploadDialog] = React.useState<{ isOpen: boolean, isLoading: boolean, title: string, handleClose: any, handleSubmit: any, onFilesChange: any }>({ isOpen: false, isLoading: false, title: '', handleClose: () => { }, handleSubmit: () => { }, onFilesChange: () => { } });
+    // const [fileList, setFileList] = React.useState<File[]>([]);
+    let fileList: File[] = [];
+
     const columns: GridColDef[] = [
         { field: 'name', headerName: 'Name', flex: 1 },
         {
@@ -85,15 +91,49 @@ export default function TacticDataTable() {
 
                 function handleEdit() {
                     Router.push({
-                        pathname: '/tactics/edit',
-                        query: { id: params.row.id }
+                        pathname: `/tactics/edit/${params.row.id}`,
                     })
                 }
 
                 function handleChart() {
                     Router.push({
-                        pathname: `/tactics/profit/${params.row.id }`,
+                        pathname: `/tactics/profit/${params.row.id}`,
                     })
+                }
+
+                function openUploadDialog() {
+                    fileList = [];
+
+                    setUploadDialog({
+                        isOpen: true,
+                        isLoading: false,
+                        title: `Upload CSV: ${params.row.name}`,
+                        handleClose: (event: object, reason: string) => {
+                            if (reason !== "backdropClick") {
+                                setUploadDialog(prevDialogState => ({
+                                    ...prevDialogState,
+                                    isOpen: false
+                                }));
+                            }
+                        },
+                        handleSubmit: () => {
+                            setUploadDialog(prevDialogState => ({
+                                ...prevDialogState,
+                                isLoading: true
+                            }));
+
+                            APIUtils.upload(`/api/tactics/${params.row.id}/upload-csv`, fileList).then(response => {
+                                console.log("ok");
+                                setUploadDialog(prevDialogState => ({
+                                    ...prevDialogState,
+                                    isOpen: false
+                                }));
+                            })
+                        },
+                        onFilesChange: (files: File[]) => {
+                            fileList = files;
+                        }
+                    });
                 }
 
                 return (
@@ -103,6 +143,9 @@ export default function TacticDataTable() {
                         </IconButton>
                         <IconButton aria-label="edit" color="primary" onClick={handleEdit}>
                             <EditIcon />
+                        </IconButton>
+                        <IconButton aria-label="uploadDialog" color="primary" onClick={openUploadDialog}>
+                            <FileUploadIcon />
                         </IconButton>
                         <IconButton aria-label="delete" onClick={handleDelete}>
                             <DeleteIcon />
@@ -144,6 +187,14 @@ export default function TacticDataTable() {
                 handleClose={dialog.handleClose}
                 handleSubmit={dialog.handleSubmit}
                 isLoading={dialog.isLoading}
+            />
+            <UploadDialog
+                isOpen={uploadDialog.isOpen}
+                title={uploadDialog.title}
+                handleClose={uploadDialog.handleClose}
+                handleSubmit={uploadDialog.handleSubmit}
+                isLoading={uploadDialog.isLoading}
+                onFilesChange={uploadDialog.onFilesChange}
             />
             <DataGrid
                 sx={{ mt: 4 }}

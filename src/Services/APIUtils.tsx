@@ -49,4 +49,32 @@ export default class APIUtils {
 
         return response;
     }
+
+    static async upload(urlPath: string, files?: File[]) {
+        let response = null;
+        const config = {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            }
+        };
+
+        let formData = new FormData();
+        files?.forEach((file) => {
+            formData.append('files', file);
+        })
+
+        try {
+            response = await axios.post(urlPath, formData, config);
+        } catch (err) {
+            if (request.isAxiosError(err) && err.response) {
+                if (err.response.status === 401 || err.response.status === 419) {
+                    return redirectPage('/auth/login');
+                }
+
+                throw err;
+            }
+        }
+
+        return response;
+    }
 }
