@@ -60,7 +60,7 @@ export default class APIUtils {
 
         let formData = new FormData();
         files?.forEach((file) => {
-            formData.append('files', file);
+            formData.append('files[]', file);
         })
 
         try {

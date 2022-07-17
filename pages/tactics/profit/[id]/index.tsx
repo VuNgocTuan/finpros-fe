@@ -12,7 +12,6 @@ import {
     Legend,
 } from 'chart.js';
 import { Line } from 'react-chartjs-2';
-import faker from 'faker';
 import { useRouter } from "next/router";
 
 ChartJS.register(
