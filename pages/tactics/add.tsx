@@ -69,11 +69,16 @@ const TacticAdd = () => {
     function handleSubmit() {
         setLoading(true);
 
+        let tickers: Array<Object> | null = [...tickerFields];
+        if (tickerFields.length == 1 && tickerFields.at(0)?.ticker == 0) {
+            tickers = null;
+        }
+
         const data = {
             'name': tacticName,
             'author': author,
             'start_date': moment(dateValue).format('yyyy-MM-DD'),
-            'tickers': tickerFields
+            'tickers': tickers
         };
 
         APIUtils.fetch('POST', '/api/tactics', data).then(response => {

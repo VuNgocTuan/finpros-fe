@@ -7,6 +7,7 @@ import LoadingButton from '@mui/lab/LoadingButton';
 import Router, { useRouter } from "next/router";
 import MainLayout from "../../../../components/MainLayout";
 import APIUtils from "../../../../src/Services/APIUtils";
+import RemoveIcon from '@mui/icons-material/Remove';
 
 const currencies = [
     {
@@ -56,6 +57,12 @@ const TacticEdit = () => {
         setTickerFields([...tickerFields, newTicker]);
     }
 
+    function removeTicker(index: number) {
+        let data = [...tickerFields];
+        data.splice(index, 1);
+        setTickerFields(data);
+    }
+
     function handleTickerVolumeChange(index: number, event: React.ChangeEvent<HTMLInputElement>) {
         let data = [...tickerFields];
         data[index]['volume'] = Number(event.target.value);
@@ -79,8 +86,7 @@ const TacticEdit = () => {
     function handleTickerEndDateChange(index: number, newValue: Date | null) {
         let data = [...tickerFields];
         data[index]['end_date'] = newValue ? moment(newValue).format('yyyy-MM-DD') : '';
-        console.log(data[index]);
-        
+
         setTickerFields(data);
     }
 
@@ -91,12 +97,20 @@ const TacticEdit = () => {
     function handleSubmit() {
         setLoading(true);
 
+        let tickers: Array<Object> | null = [...tickerFields];
+        if (tickerFields.length == 1 && tickerFields.at(0)?.stock_id == 0) {
+            tickers = null;
+        }
+        console.log(tickerFields.length);
+        console.log(tickerFields.at(0)?.stock_id);
+        
+
         const data = {
             'name': tacticName,
             'author': author,
             'start_date': dateValue ? moment(dateValue).format('yyyy-MM-DD') : null,
             'end_date': endDateValue ? moment(endDateValue).format('yyyy-MM-DD') : null,
-            'tickers': tickerFields
+            'tickers': tickers
         };
 
         APIUtils.fetch('PUT', `/api/tactics/${router.query.id}`, data).then(response => {
@@ -105,7 +119,7 @@ const TacticEdit = () => {
             setStartDateErr(null);
             setEndDateErr(null);
             setTickersErr(null);
-            
+
             return Router.push('/tactics/list');
         }).catch(err => {
             setLoading(false);
@@ -132,7 +146,14 @@ const TacticEdit = () => {
             setAuthor(tactic.author);
             setDateValue(tactic.start_date);
             setEndDateValue(tactic.end_date);
-            setTickerFields(tactic.tactic_stocks);
+            if (tactic.tactic_stocks.length > 0) {
+                setTickerFields(tactic.tactic_stocks);
+            } else {
+                setTickerFields([
+                    {
+                        id: 0, volume: 0, tactic_id: Number(router.query.id), stock_id: 0, start_date: '', end_date: ''
+                    }]);
+            }
         });
 
     }, []);
@@ -264,6 +285,13 @@ const TacticEdit = () => {
                                         helperText={(tickersErr != null && tickersErr[`tickers.${index}.end_date`] !== undefined) ? tickersErr[`tickers.${index}.end_date`] : ''}
                                     />}
                                 />
+                                <IconButton
+                                    aria-label="remove"
+                                    size="large"
+                                    style={{ width: "50px", height: 'fit-content' }}
+                                    onClick={() => removeTicker(index)}>
+                                    <RemoveIcon fontSize="inherit" />
+                                </IconButton>
                                 <IconButton
                                     aria-label="add"
                                     size="large"
