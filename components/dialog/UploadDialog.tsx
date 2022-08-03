@@ -5,7 +5,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import { LoadingButton } from '@mui/lab';
-import { Stack, Typography } from '@mui/material';
+import { DialogContentText, Stack, Typography } from '@mui/material';
 
 export default function UploadDialog({ title, handleClose, handleSubmit, isOpen, isLoading, onFilesChange }: any) {
     const [fileList, setFileList] = React.useState<File[]>([]);
@@ -20,6 +20,11 @@ export default function UploadDialog({ title, handleClose, handleSubmit, isOpen,
         const files = event.currentTarget?.files;
         const fileListArr = [];
         if (files != null) {
+            if (files.length > 20) {
+                alert("The maximum number of files is 20")
+                return;
+            }
+
             for (let i = 0; i < files.length; i++) {
                 const file = files.item(i);
                 if (file) {
@@ -36,6 +41,9 @@ export default function UploadDialog({ title, handleClose, handleSubmit, isOpen,
             <Dialog disableEnforceFocus disableEscapeKeyDown open={isOpen} onClose={handleClose}>
                 <DialogTitle>{title}</DialogTitle>
                 <DialogContent>
+                    <DialogContentText id="alert-dialog-description">
+                        Max 20 files per time.
+                    </DialogContentText>
                     <Stack direction="column" spacing={2}>
                         <Button style={{ width: '100%' }} variant="contained" component="label" disabled={isLoading}>
                             Select Files
