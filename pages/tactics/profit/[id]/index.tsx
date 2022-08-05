@@ -113,27 +113,19 @@ const TacticProfit = () => {
                                 <TableCell component="th" scope="row">
                                     {row}
                                 </TableCell>
-                                <TableCell align="right">{formatter.format(profitData.datasets[0].data[index])}</TableCell>
+                                <TableCell style={{ color: 'black', fontWeight: 'bold' }} align="right">{formatter.format(profitData.datasets[0].data[index])}</TableCell>
                             </TableRow>
                         ))}
-                        <TableRow>
-                            <TableCell component="th" scope="row" size="medium">
-                                <Typography variant="button">Total</Typography>
-                            </TableCell>
-                            <TableCell align="right">
-                                <Typography variant="button">{formatter.format(totalProfit)}</Typography>
-                            </TableCell>
-                        </TableRow>
                     </TableBody>
                 </Table>
             </TableContainer>
-        </div>
+        </div >
     );
 }
 
 TacticProfit.getLayout = function getLayout(page: ReactElement) {
     return (
-        <MainLayout childContainer={page} title="Profit"></MainLayout>
+        <MainLayout childContainer={page} title="Cummulative Profit"></MainLayout>
     )
 }
 
