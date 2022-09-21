@@ -18,6 +18,10 @@ const currencies = [
     {
         value: 'My',
         label: 'My',
+    },
+    {
+        value: 'Duong',
+        label: 'Duong',
     }
 ];
 
